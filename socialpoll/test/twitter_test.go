@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"os"
 	"testing"
 )
 
@@ -13,12 +14,21 @@ type Rule struct {
 	Value string `json:"value"`
 	Tag   string `json: "tag,omitempty"`
 }
+type tweet struct {
+	Data struct {
+		Id   json.Number `json:"id,omitempty"`
+		Text string      `json:"text,omitempty"`
+	} `json:"data,omitempty"`
+	MatchingRules []struct {
+		Id  json.Number `json:"id,omitempty"`
+		Tag string      `json:"tag,omitempty"`
+	} `json:"matching_rules,omitempty"`
+}
 
 func TestTwitter(t *testing.T) {
 	url_path := "https://api.twitter.com/2/tweets/search/stream/rules"
 	method := "POST"
-	token := "AAAAAAAAAAAAAAAAAAAAAJijRAEAAAAAmwxfgCD6xfDpAzm5IAAowfsgXtA%3DQDT6c3CiOxI6KzX1mxAEIXBJisu601WBA24QwSyIMLDGJjRLh5"
-	// bearer_token := os.Getenv("SP_TWITTER_BEARERTOKEN")
+	token := os.Getenv("SP_TWITTER_BEARERTOKEN")
 	u, err := url.Parse(url_path)
 	if err != nil {
 		t.Errorf("failed to parse URL, path : %s", url_path)
@@ -96,4 +106,40 @@ func TestTwitter(t *testing.T) {
 	if resp.StatusCode/100 != 2 {
 		t.Errorf("failed to delete twitter api, error code: %v", resp.StatusCode)
 	}
+}
+
+func TestStreamTwitter(t *testing.T) {
+	query := url.Values{
+		"tweet.fields": {"text"},
+	}
+	req, err := http.NewRequest("GET", "https://api.twitter.com/2/tweets/search/stream?"+query.Encode(), nil)
+	bearer_token := os.Getenv("SP_TWITTER_BEARERTOKEN")
+	if err != nil {
+		t.Error(err)
+	}
+	req.Header.Set("Content-Type", "applicaion/json")
+	req.Header.Set("Authorization", "Bearer "+bearer_token)
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Error(err)
+	}
+	i := 0
+	// bytesRead := 0
+	reader := resp.Body
+	decoder := json.NewDecoder(reader)
+
+	for {
+		var tw tweet
+		if err := decoder.Decode(&tw); err != nil {
+			t.Error(err)
+			break
+		}
+		t.Log(tw)
+		i++
+		if i == 3 {
+			break
+		}
+	}
+
+	t.Fail()
 }

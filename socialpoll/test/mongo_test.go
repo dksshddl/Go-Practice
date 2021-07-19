@@ -22,11 +22,11 @@ type Option struct {
 }
 
 func TestMongo(t *testing.T) {
-	log.Println("dialing mongodb: localhost")
+	log.Println("dialing mongodb:")
 	// [mongodb:]//[id]:[pw]@[address]
 	var ops []Option
 	clientOptions := options.Client().
-		ApplyURI("mongodb+srv://mongo:mongo@cluster0.56m12.mongodb.net/ballots?retryWrites=true&w=majority")
+		ApplyURI("<dbpath>")
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	client, err := mongo.Connect(ctx, clientOptions)
@@ -40,7 +40,6 @@ func TestMongo(t *testing.T) {
 	}
 	defer cur.Close(ctx)
 	cur.All(ctx, &ops)
-
 	if len(ops) == 0 {
 		t.Errorf("failed to find to data, there is no data.")
 	}
@@ -48,5 +47,4 @@ func TestMongo(t *testing.T) {
 	if err := cur.Err(); err != nil {
 		t.Errorf("cursor error, %s", err)
 	}
-
 }
