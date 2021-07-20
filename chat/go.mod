@@ -1,4 +1,4 @@
-module main
+module Go-Practice/chat
 
 go 1.16
 

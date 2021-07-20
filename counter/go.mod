@@ -1,4 +1,4 @@
-module counter
+module Go-Practice/counter
 
 go 1.16
 

@@ -1,11 +1,11 @@
 package main
 
 import (
+	"Go-Practice/socialpoll/twitter"
 	"context"
 	"log"
 	"os"
 	"os/signal"
-	"socialpoll/twitter"
 	"sync"
 	"syscall"
 	"time"

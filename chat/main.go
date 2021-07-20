@@ -1,9 +1,9 @@
 package main
 
 import (
+	"Go-Practice/chat/trace"
 	"flag"
 	"log"
-	"main/trace"
 	"net/http"
 	"os"
 	"path/filepath"

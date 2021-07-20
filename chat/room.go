@@ -1,8 +1,8 @@
 package main
 
 import (
+	"Go-Practice/chat/trace"
 	"log"
-	"main/trace"
 	"net/http"
 
 	"github.com/gorilla/websocket"

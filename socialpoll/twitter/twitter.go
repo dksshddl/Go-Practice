@@ -1,6 +1,7 @@
 package twitter
 
 import (
+	"Go-Practice/socialpoll/utils"
 	"bytes"
 	"encoding/json"
 	"io"
@@ -9,7 +10,6 @@ import (
 	"net/http"
 	"net/url"
 	"os"
-	"socialpoll/utils"
 	"strings"
 	"sync"
 	"time"

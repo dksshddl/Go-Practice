@@ -1,4 +1,4 @@
-module socialpoll
+module Go-Practice/socialpoll
 
 go 1.16
 
