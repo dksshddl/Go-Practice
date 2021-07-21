@@ -29,6 +29,5 @@ func ReadSettings() settings {
 	decoder := json.NewDecoder(file)
 	var s settings
 	decoder.Decode(&s)
-	json.Unmarshal()
 	return s
 }

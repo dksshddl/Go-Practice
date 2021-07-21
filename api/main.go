@@ -1,12 +1,16 @@
 package main
 
 import (
-	_ "Go-Practice/utils"
+	"Go-Practice/api/respond"
+	"Go-Practice/utils"
 	"context"
 	"flag"
+	"log"
 	"net/http"
+	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type contextKey struct {
@@ -14,7 +18,7 @@ type contextKey struct {
 }
 
 type Server struct {
-	db *mongo.Session
+	db *mongo.Client
 }
 
 var contextKeyAPIKey = &contextKey{"apikey"}
@@ -26,22 +30,40 @@ func APIKey(ctx context.Context) (string, bool) {
 }
 
 func main() {
-	id := utils.Database[0].Id
-	pw := setting.Database[0].Password
-	path := setting.Database[0].Path
+	id := utils.Setting.Database[0].Id
+	pw := utils.Setting.Database[0].Password
+	path := utils.Setting.Database[0].Path
 	defaultMongoPath := "mongodb+srv://" + id + ":" + pw + "@" + path
 
 	var (
-		addr  = flag.String("addr", ":8080", "endpoint address")
-		mongo = flag.String("mongo", defaultMongoPath, "mongodb addrss")
+		addr       = flag.String("addr", ":8080", "endpoint address")
+		mongo_addr = flag.String("mongo", defaultMongoPath, "mongodb addrss")
 	)
+
+	log.Println("Dialing mongo", mongo_addr)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	db, err := mongo.Connect(ctx, options.Client().ApplyURI(*mongo_addr))
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer db.Disconnect(ctx)
+
+	s := &Server{db: db}
+
+	mux := http.NewServeMux()
+	mux.HandleFunc("/polls/", withCORS(withAPIKey(s.handlePolls)))
+	log.Println("Starting web server on,", *addr)
+	http.ListenAndServe(":8080", mux)
+	log.Println("Stopping...")
 }
 
 func withAPIKey(fn http.HandlerFunc) http.HandlerFunc {
 	return func(rw http.ResponseWriter, r *http.Request) {
 		key := r.URL.Query().Get("key")
 		if !isValidAPIKey(key) {
-			respondErr(rw, r, http.StatusUnauthorized, "invalid API key")
+			respond.RespondErr(rw, r, http.StatusUnauthorized, "invalid API key")
 			return
 		}
 		ctx := context.WithValue(r.Context(), contextKeyAPIKey, key)
@@ -56,4 +78,8 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 		rw.Header().Set("Access-Control-Expose-Headers", "Location")
 		fn(rw, r)
 	}
+}
+
+func isValidAPIKey(key string) bool {
+	return key == "abc123"
 }

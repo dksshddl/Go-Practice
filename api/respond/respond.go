@@ -30,6 +30,6 @@ func RespondErr(w http.ResponseWriter, r *http.Request, status int, args ...inte
 	})
 }
 
-func ResponsdHTTPErr(w http.ResponseWriter, r *http.Request, status int) {
+func RespondHTTPErr(w http.ResponseWriter, r *http.Request, status int) {
 	RespondErr(w, r, status, http.StatusText(status))
 }
