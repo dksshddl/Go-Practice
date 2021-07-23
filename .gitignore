@@ -2,3 +2,6 @@ socialpoll/setup.sh
 
 settings.json
 setup.sh
+
+*.dat
+*.out
