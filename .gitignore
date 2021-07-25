@@ -5,3 +5,5 @@ setup.sh
 
 *.dat
 *.out
+
+backup/cmds/backup/backupdata/
