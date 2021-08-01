@@ -1,8 +1,10 @@
 // protoc --proto_path=src --go_out=out --go_opt=paths=source_relative foo.proto bar/baz.proto
 
+// protoc --go_out=. --go-grpc_out=. --go-grpc_opt=paths=source_relative  pb/vault.proto 
+
 syntax = "proto3";
 package pb;
-option go_package = ".";
+option go_package = "pb/;pb";
 
 service Vault {
     rpc Hash(HashRequest) returns (HashResponse) {}
