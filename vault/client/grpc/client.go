@@ -10,14 +10,14 @@ import (
 
 func New(conn *grpc.ClientConn) vault.Service {
 	var hashEndpoint = grpctransport.NewClient(
-		conn, "valut", "Hash",
+		conn, "Vault", "Hash",
 		vault.EncodeGRPCHashRequest,
 		vault.DecodeGRPCHashResponse,
 		pb.HashResponse{},
 	).Endpoint()
 
 	var validateEndpoint = grpctransport.NewClient(
-		conn, "valut", "validate",
+		conn, "Vault", "Validate",
 		vault.EncodeGRPCValidateRequest,
 		vault.DecodeGRPCValidateResponse,
 		pb.ValidateResponse{},
